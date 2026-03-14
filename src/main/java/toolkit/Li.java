@@ -25,6 +25,5 @@ public class Li extends Text {
      */
     public Li(String content) {
         super("• " + content);
-        setStyle("-fx-font-size: 14px; -fx-padding: 0 0 0 16px;");
     }
 }

@@ -11,6 +11,7 @@ set "APP_MAIN_CLASS=my_app.App"
 set "APP_ICON=src\main\resources\assets\app_ico.ico"
 set "JAR_FILE=my_app-%APP_VERSION%-jar-with-dependencies.jar"
 set "FX_MODULES=javafx.controls,javafx.fxml,javafx.graphics,java.sql,javafx.media,javafx.web"
+set "JAVAFX_SDK_VERSION=25.0.1"
 
 echo Checking requirements to create the installer...
 
@@ -33,8 +34,8 @@ for /f "tokens=3" %%a in ('java -version 2^>^&1 ^| findstr /i "version"') do set
 set "major_version=!java_version:~1,2!"
 if "!major_version!"=="" (
     echo WARNING: Could not reliably check JDK version. Proceeding...
-) else if !major_version! lss 21 (
-    echo WARNING: JDK version is less than 21. Current: !major_version!
+) else if !major_version! lss 25 (
+    echo WARNING: JDK version is less than 25. Current: !major_version!
 )
 
 REM WiX Toolset Check
@@ -75,12 +76,12 @@ mkdir build\input_app
 
 REM Copia JAR e dependências JavaFX para o diretório de entrada
 copy "target\%JAR_FILE%" build\input_app\
-xcopy /E /I /Y ".java_fx\lib" "build\input_app\lib"
+xcopy /E /I /Y "java_fx_modules\windows-%JAVAFX_SDK_VERSION%\lib" "build\input_app\lib"
 
 REM --- 3. JLink: Create Runtime Image (JRE) ---
 echo Creating custom runtime image (JRE) with JLink...
 jlink ^
-    --module-path ".java_fx/lib" ^
+    --module-path "java_fx_modules\windows-%JAVAFX_SDK_VERSION%\lib" ^
     --add-modules %FX_MODULES% ^
     --output build\runtime
 
@@ -89,10 +90,6 @@ if !errorlevel! neq 0 (
     pause
     exit /b 1
 )
-
-REM **REMOVIDO: Cópia de DLLs para build\runtime\bin é desnecessária aqui. O jlink não usa esses arquivos.**
-REM **A cópia só é necessária para o diretório final da aplicação (Passo 5).**
-
 
 REM --- 4. JPackage: Create Application Image (.app) ---
 echo Creating Windows Application Image...
@@ -109,7 +106,6 @@ jpackage ^
     --type app-image ^
     --runtime-image build\runtime ^
     --java-options "-Djava.library.path=bin" ^
-    --java-options "-Dprism.order=sw" ^
     --java-options "--enable-native-access=javafx.graphics" ^
     --icon "%APP_ICON%"
 
@@ -121,7 +117,7 @@ if !errorlevel! neq 0 (
 
 REM --- 5. Fix DLLs (CRUCIAL FIX: Copia DLLs para a imagem final) ---
 echo Copying necessary JavaFX DLLs to final application image...
-xcopy /E /I /Y ".java_fx\bin\*.dll" "dist\%APP_NAME%\bin\"
+xcopy /E /I /Y "java_fx_modules\windows-%JAVAFX_SDK_VERSION%\bin\*.dll" "dist\%APP_NAME%\bin\"
 
 REM --- 6. JPackage: Create MSI Installer (CORRIGIDO) ---
 echo Application image created successfully!
@@ -153,7 +149,7 @@ REM --- 7. Finalize (SIMPLIFICADO) ---
 REM O comando 'move' foi removido pois o --dest do jpackage ja colocou o MSI em ..\dist
 echo.
 echo Installer created successfully!
-echo The installer file is at: dist\%APP_NAME%-%APP_VERSION%.msi
+echo The installer file is at: /dist
 echo.
 
 REM Clean ALL temporary build directories
