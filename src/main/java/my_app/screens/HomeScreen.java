@@ -28,6 +28,7 @@ public class HomeScreen extends StackPane {
 
     @Component
     VBox layout = new VBox(logo, title, description, bt1);
+
     public HomeScreen() {
         getChildren().add(layout);
         getStyleClass().add("bg");

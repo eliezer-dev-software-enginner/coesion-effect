@@ -19,27 +19,7 @@
     <main.class>my_app.App</main.class>
   </properties>
 
-    <repositories>
-        <!-- 1. Adicione o repositório JitPack -->
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
   <dependencies>
-<!--      <dependency>-->
-<!--          <groupId>plantfall</groupId>-->
-<!--          <artifactId>hotreload-library-javafx</artifactId>-->
-<!--          <version>1.0.0</version>-->
-<!--      </dependency>-->
-
-      <dependency>
-          <groupId>com.github.eliezer-software-enginner</groupId>
-          <artifactId>hotreload-library-javafx</artifactId>
-          <version>1.0.3</version>
-      </dependency>
-
       <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
