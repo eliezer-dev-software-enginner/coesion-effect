@@ -52,7 +52,7 @@ public class HomeScreen extends StackPane {
             rotate.setOnFinished(e->{
                 new Thread(()->{
                     try {
-                        Desktop.getDesktop().browse(URI.create("https://github.com/eliezer-software-enginner/coesion-effect"));
+                        Desktop.getDesktop().browse(URI.create("https://github.com/eliezer-dev-software-enginner/coesion-effect"));
 
                     } catch (Exception _) {
                     }
